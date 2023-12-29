@@ -1,0 +1,27 @@
+body{
+	margin: auto;
+	max-width:1280px;
+	font-size:2em; /*changes all fonts in percentage*/
+}
+.row{
+	display:flex;
+	justify-content:center;
+	align-items:row;
+}
+
+.even_justify{
+	justify-content:space-between;
+}
+
+a{
+	color:#008000;
+}
+a:hover{
+	color:red;
+}
+.anchor-left{
+	align-items: start;
+}
+.anchor-right{
+	align-items:end;	
+}
