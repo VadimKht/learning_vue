@@ -6,20 +6,20 @@ import { RouterLink } from 'vue-router'
 p,h1,h2,h3,h4,h5,h6,a{
 	margin: auto 0;
 }
+._header *{
+	margin-top: auto;
+	margin-bottom: auto;
+}
 </style>
 
 <template>
-	<div class="row even_justify">
+	<div class="row justify-even _header">
 		<div class="row anchor-left">
 			<h1>
 				My website
 			</h1>
-			<p>
-				hello world
-			</p>
 		</div>
 		<div class="anchor-right">
-			<slot></slot>
 			<RouterLink to="/login">login</RouterLink>
 		</div>
 	</div>

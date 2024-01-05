@@ -5,11 +5,20 @@ body{
 }
 .row{
 	display:flex;
+	flex-direction:row;
+}
+.column{
+	display:flex;
+	flex-direction: column;
+	text-align: center;
+}
+.center{
+	display:flex;
 	justify-content:center;
-	align-items:row;
+	text-align: center;
 }
 
-.even_justify{
+.justify-even{
 	justify-content:space-between;
 }
 

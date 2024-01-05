@@ -33,6 +33,11 @@ export function getUTCTimeDur(dur_s)
 }
 
 export function setCookie(key, value, expiration_s){
-    let string = key + "=" + value + ";expires=" + getUTCTimeDur(expiration_s).toUTCString() + ";SameSite=strict";
-    document.cookie = string;
+	if(expiration_s == undefined){
+		let string = key + "=" + value + ";SameSite=strict";
+		document.cookie = string;
+		return;
+	}
+	let string = key + "=" + value + ";expires=" + getUTCTimeDur(expiration_s).toUTCString() + ";SameSite=strict";
+	document.cookie = string;
 }

@@ -1,17 +1,30 @@
 <script setup>
     import { useRoute } from 'vue-router';
-    import { getUTCTimeDur } from '../common/customfuncs';
+    import { getUTCTimeDur, setCookie } from '../common/customfuncs';
+
     const route = useRoute();
     let username = route.query.username;
     let password = route.query.password;
+    let authmethod = route.query.AuthMethod;
     let loggedSucc = false;
-    if(username == "root", password == "admin")
+    if(authmethod == "Login")
     {
-        document.cookie = "token=ajawifjaif; expires=" + getUTCTimeDur(10000) + ";SameSite=strict";
-        loggedSucc = true;
+        // check database entry
+        if(username == "root", password == "admin")
+        {
+            // later generate random token
+            document.cookie = "token=ajawifjaif; expires=" + getUTCTimeDur(10000) + ";SameSite=strict";
+            loggedSucc = true;
+        }
+        setCookie("hasLoggedSuccessfully", loggedSucc, 10);
+    }
+    if(authmethod == "Register")
+    {
+        setCookie("registered", "yes", 10)
+        // create new database entry
     }
 
-    document.cookie = "hasLoggedSuccessfully="+ loggedSucc + "; expires=" + getUTCTimeDur(10).getUTCDate() + ";SameSite=strict";
+    
     window.location.replace("/login");
 </script>
 <template>
