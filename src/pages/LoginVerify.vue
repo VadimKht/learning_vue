@@ -1,7 +1,6 @@
 <script setup>
     import { useRoute } from 'vue-router';
     import { getUTCTimeDur, setCookie } from '../common/customfuncs';
-
     const route = useRoute();
     let username = route.query.username;
     let password = route.query.password;

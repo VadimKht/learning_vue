@@ -3,15 +3,25 @@ import { RouterLink } from 'vue-router'
 </script>
 
 <script>
-import {cookieExists, getCookieValue, setCookie} from '../common/customfuncs'
-
-let justLoggedIn = cookieExists("hasLoggedSuccessfully");
-let valthing = getCookieValue("hasLoggedSuccessfully");
-let registeredChosen = cookieExists("registered");
-let registeredsuccOrNot = getCookieValue("registered");
-document.cookie = "hasLoggedSuccessfully=clean;expires=" + new Date().toUTCString() + ";SameSite=strict";
-setCookie("registered", "clean", 0);
-let succLog = (valthing == "true");
+import TutorialDataService from "../services/TutorialDataService";
+export default {
+	methods: {
+		Loginf(){
+			const data = {
+				username: document.getElementById("username").value,
+				password: document.getElementById("password").value
+			};
+			TutorialDataService.Login(data).then(res=>console.log(res)).catch(err=>console.log("error! its " + err));
+		},
+		Registerf(){
+			const data = {
+				username: document.getElementById("username").value,
+				password: document.getElementById("password").value
+			};
+			TutorialDataService.Register(data).then(res=>console.log(res)).catch(err=>console.log("error! its " + err));
+		}
+	}
+};
 </script>
 
 <template>
@@ -19,8 +29,9 @@ let succLog = (valthing == "true");
 		<p>Login page</p>
 		<RouterLink to="/">Return back to home</RouterLink>
 	</div>
-		<!--vue router as a server sucks so i'm doing get. normally this should be post-->
-	<form action="/LoginVerify" method="get" class="center column _loginverify">
+	<!--vue router as a server sucks so i'm doing get. normally this should be post-->
+	<!--update: i found out i just have to have backend server-->
+	<div class="center column _loginverify">
 		<br>
 		<label for="username">username</label><br>
 		<input type="text" name="username" id="username" value=""><br>
@@ -28,21 +39,9 @@ let succLog = (valthing == "true");
 		<input type="text" name="password" id="password" value=""><br>
 		<br>
 		<div class="row justify-even">
-			<input type="submit" name="AuthMethod" value="Login" class="_submit_input">
-
-			<input type="submit" name="AuthMethod" value="Register" class="_submit_input">
+			<button type="button" @click="Loginf" class="_submit_input">Login</button>
+			<button type="button" @click="Registerf" class="_submit_input">Register</button>
 		</div>
-	</form>
-	<!--disasterous way to do this to be honest-->
-	<div v-if="registeredChosen" class="center column">
-		welcome back
-		<p v-if="registeredsuccOrNot">Successful register!</p>
-		<p v-else>unsuccessful registration</p>
-	</div>
-	<div v-else v-if="justLoggedIn" class="center column">
-		welcome back
-		<p v-if="succLog">correct credential</p>
-		<p v-else>incorrect credentials</p>
 	</div>
 	
 </template>
