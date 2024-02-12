@@ -4,6 +4,7 @@ import { RouterLink } from 'vue-router'
 
 <script>
 import TutorialDataService from "../services/TutorialDataService";
+import {setCookie} from "../common/customfuncs"
 export default {
 	methods: {
 		Loginf(){
@@ -18,7 +19,7 @@ export default {
 				username: document.getElementById("username").value,
 				password: document.getElementById("password").value
 			};
-			TutorialDataService.Register(data).then(res=>console.log(res)).catch(err=>console.log("error! its " + err));
+			TutorialDataService.Register(data).then(res=>{console.log(res); setCookie("token", res.data.token,3600)}).catch(err=>console.log("error! its " + err));
 		}
 	}
 };

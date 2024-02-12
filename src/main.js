@@ -5,7 +5,6 @@ import App from './App.vue'
 import Home from './pages/Home.vue'
 import Login from './pages/Login.vue'
 import Error from './pages/404.vue'
-import LoginVerify from './pages/LoginVerify.vue'
 
 const router = createRouter({
 //vue routing
@@ -28,11 +27,6 @@ const router = createRouter({
 			path: '/:any',
 			name: 'Not found',
 			component: Error
-		},
-		{
-			path: '/LoginVerify',
-			name: 'Verify login',
-			component: LoginVerify
 		}
 	]
 })

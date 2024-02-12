@@ -13,5 +13,7 @@ db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 
 db.users = require("./user.model.cjs")(sequelize, Sequelize);
+db.posts = require("./posts.model.cjs")(sequelize,Sequelize);
+
 
 module.exports = db;

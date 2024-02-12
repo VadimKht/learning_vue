@@ -8,6 +8,9 @@ module.exports = (sequelize, Sequelize) => {
       },
       verified: {
         type: Sequelize.BOOLEAN
+      },
+      token: {
+        type: Sequelize.STRING
       }
     });
   

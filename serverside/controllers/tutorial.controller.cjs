@@ -1,7 +1,7 @@
 const db = require("../models/index.cjs");
 const Usertype = db.users;
+const Posttype = db.posts;
 const Op = db.Sequelize.Op;
-
 
 exports.create = (req, res) => {
     // Validate request
@@ -9,29 +9,35 @@ exports.create = (req, res) => {
       res.status(400).send({
         message: "Content can not be empty!"
       });
-      console.log("empty");
       return;
     }
-  
+    let token = Math.random().toString(); // for now
     // Create a user
     const user = {
       username: req.body.username,
       password: req.body.password,
-      verified: false
+      verified: false,
+      token: token
     };
-    
-  
-    // Save user in the database
-    Usertype.create(user)
-      .then(data => {
-        res.send(data);
-      })
-      .catch(err => {
-        res.status(500).send({
-          message:
-            err.message || "Some error occurred while creating the Tutorial."
+
+    Usertype.findOne({where: {username: user.username}}).then(data=>{
+      if(data != null){
+        res.status(409).send({message: "such username is already registered =/"});
+        return;
+      }
+      if(data == null){
+        // Save user in the database
+        Usertype.create(user)
+        .then(data => {
+          res.status(201).send({message: "successful register!", token: token});
+        })
+        .catch(err => {
+          res.status(500).send({
+            message:
+              err.message || "Some error occurred while creating the user"
+          });
         });
-      });
+      }})
   };
 
   exports.findAll = (req, res) => {
@@ -68,6 +74,8 @@ exports.create = (req, res) => {
         });
       });
   };
+
+
   exports.delete = (req, res) => {
     const id = req.params.id;
   
@@ -93,7 +101,6 @@ exports.create = (req, res) => {
   };
 
 exports.testCredentials = (req,res) =>{
-  console.log(findOne({params:{id:1}},{}));
   const usern = req.body.username;
   const passw = req.body.password;
   const usr = Usertype.findOne({ where: { username: usern } }).then( user => {
@@ -108,4 +115,71 @@ exports.testCredentials = (req,res) =>{
     }
     res.status(401).send({message: "incorrect password"});
   });
+}
+
+exports.postMSG = (req,res) =>{
+  if(req.body.token == null){
+    res.status(400).send({message:"incorrect request. please have a token in request"});
+    return;
+  }
+  // check if anyone exists with such token
+  Usertype.findOne({ where: { token: req.body.token } }).then(usertoken=>{
+    if(usertoken == null)
+    {
+      res.status(401).send({message:"no such token registered"});
+      return;
+    }
+    res.status(201).send({message:"successful post!"});
+
+    const postpost = {
+      creator: usertoken.username,
+      content: req.body.data
+    };
+
+    Posttype.create(postpost);
+  });
+}
+exports.getPosts = (req,res) => {
+  const page = req.params.page;
+  if(isNaN(Number(page))){
+    res.status(400).send({message: "you are supposed to request page, not a letter"});
+    return;
+  }
+  let count;
+  Posttype.count({ 
+    where: {
+      content:{
+        [Op.like]: '%'
+      }
+    }
+  }).then(res=>count=res);
+  Posttype.findAll({
+    where: {
+      id: {
+        [Op.between]: [page*10-10, page*10]
+      }
+    }
+  }).then(a=>res.send(a));
+}
+exports.getPostsNoId = (req,res)=>{
+
+  Posttype.count({ 
+    where: {
+      content:{
+        [Op.like]: '%'
+      }
+    }
+  }).then(count => {
+    if(count >= 100){
+      res.status(400).send({message: "too much posts, please use /GetMsg_page1 (add number!) instead"});
+      return;
+    }
+    Posttype.findAll({
+      where:{
+        content:{
+          [Op.like]: '%'
+        }
+      }
+    }).then(a=>res.status(200).send(a));
+  })
 }

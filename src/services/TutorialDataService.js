@@ -7,6 +7,13 @@ class TutorialDataService {
   Register(data){
     return http.post("/Register", data);
   }
+  PostPost(data){
+    return http.post("/PostMsg",data);
+  }
+  GetPost(query){
+    console.log(query);
+    return http.get("/GetMsg_page"+query.toString());
+  }
 }
 
 export default new TutorialDataService();
