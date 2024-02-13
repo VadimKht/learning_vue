@@ -1,10 +1,19 @@
 <script setup>
 import { RouterLink } from 'vue-router'
+import TutorialDataService from "../services/TutorialDataService";
+TutorialDataService.Ping().catch((err)=>{
+	if(err.code == "ERR_NETWORK") {
+		alert("ERR NETWORK");
+		return;
+	};
+	alert("seems there is an error. maybe CORS issue, check /serverside/server.cjs for CORS settings");
+});
 </script>
 
 <script>
 import TutorialDataService from "../services/TutorialDataService";
 import {setCookie} from "../common/customfuncs"
+
 export default {
 	methods: {
 		Loginf(){
@@ -12,14 +21,27 @@ export default {
 				username: document.getElementById("username").value,
 				password: document.getElementById("password").value
 			};
-			TutorialDataService.Login(data).then(res=>console.log(res)).catch(err=>console.log("error! its " + err));
+			TutorialDataService.Login(data)
+			.then(res => setCookie("token", res.data.token, 3600))
+			.catch(err=>console.log("error! its " + err));
 		},
 		Registerf(){
 			const data = {
 				username: document.getElementById("username").value,
 				password: document.getElementById("password").value
 			};
-			TutorialDataService.Register(data).then(res=>{console.log(res); setCookie("token", res.data.token,3600)}).catch(err=>console.log("error! its " + err));
+			TutorialDataService.Register(data)
+			.then(res=>{
+				setCookie("token", res.data.token, 3600);
+				alert("successful register!");
+			})
+			.catch(err=>{
+				if(err.response.status == 409) {
+					alert("A user with such username already exists");
+					return;
+				}
+				console.log("error! its " + err);
+			});
 		}
 	}
 };

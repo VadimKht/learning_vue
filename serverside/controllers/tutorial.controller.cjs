@@ -110,7 +110,7 @@ exports.testCredentials = (req,res) =>{
       return;
     }
     if(passw == user.password){
-      res.status(201).send({message: "successful log in!"});
+      res.status(201).send({message: "successful log in!", token: user.token});
       return;
     }
     res.status(401).send({message: "incorrect password"});
@@ -129,7 +129,6 @@ exports.postMSG = (req,res) =>{
       res.status(401).send({message:"no such token registered"});
       return;
     }
-    res.status(201).send({message:"successful post!"});
 
     const postpost = {
       creator: usertoken.username,
@@ -137,6 +136,7 @@ exports.postMSG = (req,res) =>{
     };
 
     Posttype.create(postpost);
+    res.status(201).send({message:"successful post!"});
   });
 }
 exports.getPosts = (req,res) => {
@@ -145,14 +145,6 @@ exports.getPosts = (req,res) => {
     res.status(400).send({message: "you are supposed to request page, not a letter"});
     return;
   }
-  let count;
-  Posttype.count({ 
-    where: {
-      content:{
-        [Op.like]: '%'
-      }
-    }
-  }).then(res=>count=res);
   Posttype.findAll({
     where: {
       id: {
@@ -182,4 +174,21 @@ exports.getPostsNoId = (req,res)=>{
       }
     }).then(a=>res.status(200).send(a));
   })
+}
+
+exports.getMsgPages = (req,res)=>{
+  Posttype.count({ 
+    where: {
+      content:{
+        [Op.like]: '%'
+      }
+    }
+  }).then(count=>{
+    const pages = Math.ceil(count/10);
+    res.status(200).send(pages.toString());
+  });
+}
+
+exports.ping = (req,res) =>{
+  res.status(200).send({message: "pong"});
 }

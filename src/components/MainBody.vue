@@ -8,26 +8,64 @@
 
 	let Posts = ref([]);
 	const activePage = ref(1);
+	let amountofPages = ref(1);
+	let pages = ref([]);
+	
+	// runs at startup, adds all pages needed by fetching it from the server
+	amountofPages.value = TutorialDataService.GetPagesAmount().then((res)=>{
+
+		for(let i = 1; i < res.data+1; i++){
+			pages.value.push({id: i, currentPage: (i == 1) ? true : false});
+		}
+	})
+	.catch(err=>{
+		alert("it seems the server is off or inaccessible. this means the page will not work as intended. follow second instruction on website");
+	});
+	
+
 	function changePage(ownNumber){
-		const PrevActiveElement = pages.find((element)=>{if(element.currentPage == true)return element})
+		const PrevActiveElement = pages.value.find((element)=>{
+			if(element.currentPage == true) return element;
+		})
 		PrevActiveElement.currentPage = false;
-		pages[ownNumber-1].currentPage = true;
+		pages.value[ownNumber-1].currentPage = true;
+		activePage.value = ownNumber;
+		updatePosts();
 		// find out how to rerender vue component just like react does it
 	}
-	let pages = [{id: 1, currentPage: true},{id: 2, currentPage: false}, {id: 3, currentPage:false}];
-
+	
 	function sendPost(){
-		if(!cookieExists("token")) alert("You are not logged in! please log in. only logged users can post.");
+		if(!cookieExists("token")) {
+			alert("You are not logged in! please log in. only logged users can post.");
+			return;
+		};
 		const token = getCookieValue("token");
-		TutorialDataService.PostPost({token: token, data: document.getElementById("inputForPost").value}).then(msg=>{console.log(msg);alert("your account seems to have been deleted or you have falcificed a token")}).catch(err=>console.log(err));
-		messagelist.appendChild(document.createElement("div"));
+		TutorialDataService.PostPost({token: token, data: document.getElementById("inputForPost").value})
+		.then(msg=>{
+			// TODO: for some reason updatePosts doesn't include the post that we just posted. seems that it doesn't actually do it in time.
+			// timeout set, CHANGE LATER!
+			setTimeout(() => {
+				updatePosts();
+			}, 200);
+			
+		})
+		.catch(err=>{
+			console.log(err);
+			alert("some error has happened. maybe you posses token for non existent user? or forgot to turn on the backend server? (console for more info)");
+		});
 	}
+	// it has annoying issue where updating it causes the scroll of page to reset to up. quite annoying. fix later.
 	function updatePosts(){
-		Posts.value = [];
+		return new Promise((resolve) => {
+			Posts.value = [];
 
-		TutorialDataService.GetPost(activePage).then(posts => posts.data.forEach(element => {
-			Posts.value.push({name: element.creator, message: element.content});
-		}));
+			TutorialDataService.GetPost(activePage.value)
+			.then(posts => {
+				posts.data.forEach(element => Posts.value.push({name: element.creator, message: element.content}))
+				console.log(posts.data);
+				resolve('resolved');
+			});
+		})
 	}
 </script>
 <template>
@@ -46,7 +84,6 @@
 	<input type="text" name="text" id="inputForPost">
 	<button @click="sendPost">send post! (requires registration)</button>
 	<br>
-	<button @click="updatePosts">Get posts!</button> <br>
 	<div id="pageButtons">
 		<!--TODO: figure out how to make-->
 		<ButtonPages v-for="page in pages" :id="page.id" :currentPage="page.currentPage" @click="changePage(page.id)"/>

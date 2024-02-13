@@ -9,6 +9,8 @@ module.exports = app => {
     router.get("/GetMsg_page:page", tutorials.getPosts);
     router.get("/GetMsg_page", tutorials.getPostsNoId);
     router.get("/GetMsg", tutorials.getPostsNoId);
+    router.get("/GetMsgPages", tutorials.getMsgPages);
+    router.get("/ping",tutorials.ping);
   
     // Retrieve all Tutorials
     router.get("/", tutorials.findAll);

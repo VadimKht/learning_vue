@@ -11,8 +11,13 @@ class TutorialDataService {
     return http.post("/PostMsg",data);
   }
   GetPost(query){
-    console.log(query);
     return http.get("/GetMsg_page"+query.toString());
+  }
+  GetPagesAmount(){
+    return http.get("/GetMsgPages");
+  }
+  Ping(){
+    return http.get("/");
   }
 }
 
