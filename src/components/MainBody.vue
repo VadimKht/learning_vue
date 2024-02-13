@@ -12,15 +12,18 @@
 	let pages = ref([]);
 	
 	// runs at startup, adds all pages needed by fetching it from the server
-	amountofPages.value = TutorialDataService.GetPagesAmount().then((res)=>{
-
+	
+	async function onStart(){
+		amountofPages.value = TutorialDataService.GetPagesAmount().then((res)=>{
+		pages.value = [];
 		for(let i = 1; i < res.data+1; i++){
-			pages.value.push({id: i, currentPage: (i == 1) ? true : false});
+			pages.value.push({id: i, currentPage: (i == activePage.value) ? true : false});
 		}
-	})
-	.catch(err=>{
+		})
+	}
+	onStart().catch(err=>{
 		alert("it seems the server is off or inaccessible. this means the page will not work as intended. follow second instruction on website");
-	});
+		});
 	
 
 	function changePage(ownNumber){
@@ -62,7 +65,7 @@
 			TutorialDataService.GetPost(activePage.value)
 			.then(posts => {
 				posts.data.forEach(element => Posts.value.push({name: element.creator, message: element.content}))
-				console.log(posts.data);
+				onStart();
 				resolve('resolved');
 			});
 		})
