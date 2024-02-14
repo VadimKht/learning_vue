@@ -4,27 +4,40 @@
 	import {cookieExists,getCookieValue} from "./../common/customfuncs"
 	import TutorialDataService from "../services/TutorialDataService";
 	import ButtonPages from "./ButtonPages.vue";
-	import { ref } from "vue"
+	import { ref, toRaw } from "vue"
 
 	let Posts = ref([]);
 	const activePage = ref(1);
 	let amountofPages = ref(1);
 	let pages = ref([]);
 	
-	// runs at startup, adds all pages needed by fetching it from the server
-	
-	async function onStart(){
-		amountofPages.value = TutorialDataService.GetPagesAmount().then((res)=>{
-		pages.value = [];
-		for(let i = 1; i < res.data+1; i++){
-			pages.value.push({id: i, currentPage: (i == activePage.value) ? true : false});
-		}
+	// really just updates messages and pages
+	function onStart(){
+		return new Promise((resv,rej)=>{
+			amountofPages.value = TutorialDataService.GetPagesAmount()
+			.then((res)=>{
+				if(res == 0){
+					alert("eh")
+					pages.value.push({id: 1, currentPage: true});
+					resv('resolved');
+					return;
+				}
+				pages.value = [];
+				for(let i = 1; i < res.data+1; i++){
+					pages.value.push({id: i, currentPage: (i == activePage.value) ? true : false});
+				}
+				resv('resolved');
+			})
+			.catch(err=>{
+				rej(err);
+			})
 		})
 	}
-	onStart().catch(err=>{
-		alert("it seems the server is off or inaccessible. this means the page will not work as intended. follow second instruction on website");
-		});
+	onStart().catch(err=>alert("it seems the server is off or inaccessible. this means the page will not work as intended. follow second instruction on website"));
 	
+	function reply(id){
+		alert(id);
+	}
 
 	function changePage(ownNumber){
 		const PrevActiveElement = pages.value.find((element)=>{
@@ -59,17 +72,15 @@
 	}
 	// it has annoying issue where updating it causes the scroll of page to reset to up. quite annoying. fix later.
 	function updatePosts(){
-		return new Promise((resolve) => {
-			Posts.value = [];
+		Posts.value = [];
 
-			TutorialDataService.GetPost(activePage.value)
-			.then(posts => {
-				posts.data.forEach(element => Posts.value.push({name: element.creator, message: element.content}))
-				onStart();
-				resolve('resolved');
-			});
-		})
+		TutorialDataService.GetPost(activePage.value)
+		.then(posts => {
+			posts.data.forEach(element => Posts.value.push({id: element.id ,name: element.creator, message: element.content}))
+			onStart();
+		});
 	}
+	updatePosts();
 </script>
 <template>
 	<div class="center column _content">
@@ -84,38 +95,47 @@
 			<li>mysql server must be running</li>
 			<li>i followed this tutorial <a href="https://www.bezkoder.com/vue-js-node-js-express-mysql-crud-example/#Create_Vue_Components">https://www.bezkoder.com/vue-js-node-js-express-mysql-crud-example/#Create_Vue_Components</a> and then changed stuff up a bit, so some stuff is still named after tutorial and there are some leftovers left</li>		</ul>
 	</div>
-	<input type="text" name="text" id="inputForPost">
-	<button @click="sendPost">send post! (requires registration)</button>
-	<br>
-	<div id="pageButtons">
-		<!--TODO: figure out how to make-->
-		<ButtonPages v-for="page in pages" :id="page.id" :currentPage="page.currentPage" @click="changePage(page.id)"/>
-	</div>
-	pages (not made yet TODO!)
-
-
-	<div id="messagelist">
-		<PostMessage v-for="post in Posts" :username="post.name" :message="post.message" :key="post.id"/>
+	<div class="messagecontrol">
+		<input type="text" name="text" id="inputForPost">
+		<button class="sndbtn" @click="sendPost">send post! (requires registration)</button>
+		<div id="pageButtons" class="pageButtons">
+			<!--TODO: figure out how to make-->
+			<ButtonPages v-for="page in pages" :id="page.id" :currentPage="page.currentPage" @click="changePage(page.id)"/>
+		</div>
+		<div id="messagelist">
+			<PostMessage v-for="post in Posts" :id="post.id" :username="post.name" :message="post.message" :key="post.id" @reply="reply"/>
+		</div>
 	</div>
 </template>
-<script>
-	window.addEventListener("scroll",setScrollVar);
-	window.addEventListener("resize",setScrollVar);
-
-function setScrollVar(){
-	const HTMLElement = document.documentElement;
-	const scrolltop = HTMLElement.scrollTop / window.scrollMaxY;
-	const HelloElement = document.getElementById("Hello")
-	Hello.style.setProperty("translate", (Math.max(25, scrolltop*100)-25)*8+"px " + 800*scrolltop + "px");
-
-	if(scrolltop >= 1)
-	{
-		document.getElementById("Hello").style.display = "none";
-	}
-}
-</script>
 <style scoped>
 	._content{
 		margin-top: 12px;
+	}
+	.messagecontrol{
+		display: flex;
+		flex-direction: column;
+
+		max-width: 500px;
+		margin: auto;
+	}
+	.messagecontrol button{
+		background-color: aliceblue;
+	}
+	.messagecontrol button:hover{
+		background: whitesmoke;
+	}
+	#messagelist{
+		/* solves annoying issue with screen when you click other page*/
+		height: 1200px;
+	}
+	#inputForPost{
+		line-height: 20px;
+	}
+	#pageButtons{
+		margin: auto;
+	}
+	.sndbtn{
+		width: 400px;
+		margin: 0 auto;
 	}
 </style>

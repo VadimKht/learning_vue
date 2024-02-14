@@ -3,7 +3,7 @@ import { RouterLink } from 'vue-router'
 import TutorialDataService from "../services/TutorialDataService";
 TutorialDataService.Ping().catch((err)=>{
 	if(err.code == "ERR_NETWORK") {
-		alert("ERR NETWORK");
+		alert("your backend is not turned on on properly. you cannot register or login.");
 		return;
 	};
 	alert("seems there is an error. maybe CORS issue, check /serverside/server.cjs for CORS settings");
@@ -14,21 +14,28 @@ TutorialDataService.Ping().catch((err)=>{
 import TutorialDataService from "../services/TutorialDataService";
 import {setCookie} from "../common/customfuncs"
 
+// later use special encryption here
+function Encrypt(password){
+	return password
+}
+
 export default {
 	methods: {
 		Loginf(){
+			const encrypted_pass = Encrypt(document.getElementById("password").value);
 			const data = {
 				username: document.getElementById("username").value,
-				password: document.getElementById("password").value
+				password: encrypted_pass
 			};
 			TutorialDataService.Login(data)
 			.then(res => setCookie("token", res.data.token, 3600))
 			.catch(err=>console.log("error! its " + err));
 		},
 		Registerf(){
+			const encrypted_pass = Encrypt(document.getElementById("password").value);
 			const data = {
 				username: document.getElementById("username").value,
-				password: document.getElementById("password").value
+				password: encrypted_pass
 			};
 			TutorialDataService.Register(data)
 			.then(res=>{
