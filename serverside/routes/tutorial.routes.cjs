@@ -4,21 +4,21 @@ module.exports = app => {
     var router = require("express").Router();
   
     // register
+    router.post("/Login", tutorials.testCredentials);
     router.post("/Register", tutorials.create);
     router.post("/PostMsg", tutorials.postMSG);
     router.get("/GetMsg_page:page", tutorials.getPosts);
     router.get("/GetMsg_page", tutorials.getPostsNoId);
     router.get("/GetMsg", tutorials.getPostsNoId);
     router.get("/GetMsgPages", tutorials.getMsgPages);
+    router.get("/GetMsgN:id", tutorials.GetPostN);
     router.get("/ping",tutorials.ping);
-  
+
     // Retrieve all Tutorials
     router.get("/", tutorials.findAll);
   
-    // Retrieve all published Tutorials
-    router.post("/Login", tutorials.testCredentials);
-  
-    // Retrieve a single Tutorial with id
+    // get info about user
+    // if i plan to make this server, REMOVE this one
     router.get("/:id", tutorials.findOne);
   
     // Delete a Tutorial with id

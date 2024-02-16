@@ -10,14 +10,17 @@ class TutorialDataService {
   PostPost(data){
     return http.post("/PostMsg",data);
   }
-  GetPost(query){
+  GetPostPage(query){
     return http.get("/GetMsg_page"+query.toString());
+  }
+  GetPost(query){
+    return http.get("/GetMsgN"+query.toString());
   }
   GetPagesAmount(){
     return http.get("/GetMsgPages");
   }
   Ping(){
-    return http.get("/");
+    return http.get("/ping");
   }
 }
 

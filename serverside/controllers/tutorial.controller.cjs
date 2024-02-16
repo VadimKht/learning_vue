@@ -135,7 +135,7 @@ exports.postMSG = (req,res) =>{
       content: req.body.data
     };
 
-    Posttype.create(postpost);
+    Posttype.create(postpost).catch(err=>res.status(500).send({message: err}));
     res.status(201).send({message:"successful post!"});
   });
 }
@@ -191,4 +191,24 @@ exports.getMsgPages = (req,res)=>{
 
 exports.ping = (req,res) =>{
   res.status(200).send({message: "pong"});
+}
+
+exports.GetPostN = (req,res) =>{
+  const id = req.params.id;
+  if(isNaN(Number(id))){
+    res.status(400).send({message: "the query is not a number"})
+  }
+
+  Posttype.findByPk(id)
+  .then(data=>{
+    if(data) {
+      res.status(200).send(data);
+    }
+    else{
+      res.status(404).send({message: "post with this id doesn't exist"});
+    }
+  }).catch(err=>{
+    res.status(500).send({message: "serverside error", error: err})
+  });
+
 }

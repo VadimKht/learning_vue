@@ -3,19 +3,27 @@
 	window.addEventListener("scroll",setScrollVar);
 	window.addEventListener("resize",setScrollVar);
 
+// this is horrible; this function is called for each Animation component. fix later
 function setScrollVar(){
 	const HTMLElement = document.documentElement;
 	const scrolltop = HTMLElement.scrollTop / window.scrollMaxY;
-	const HelloElement = document.getElementById("Hello")
-	HelloElement.style.setProperty("translate", (Math.max(10, scrolltop*100)-10)*40+"px " + 800*scrolltop + "px");
+	const HelloElement = document.getElementsByClassName("Hello");
+
+	for(let i = 0; i < HelloElement.length; i ++)
+	{
+		HelloElement[i].style.setProperty("translate", "0px " + 1000*scrolltop + "px");
+	}
+	
 
 	if(scrolltop >= 1)
 	{
-		document.getElementById("Hello").style.display = "none";
+		for(let i = 0; i< HelloElement.length; i++){
+			HelloElement[i].remove();
+		}
 	}
 }</script>
 <template>
-    <div class="Hello" id="Hello">
+    <div class="Hello">
         hello!
     </div>
 </template>
@@ -24,6 +32,5 @@ function setScrollVar(){
         background-color: darkblue;
         position:sticky;
         top:180px;
-        left:50%;
     }
 </style>
