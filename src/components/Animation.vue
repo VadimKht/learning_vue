@@ -1,19 +1,20 @@
 <!--doesn't work on mobiles-->
 <script>
-	window.addEventListener("scroll",setScrollVar);
-	window.addEventListener("resize",setScrollVar);
+	const scrlist = window.addEventListener("scroll",setScrollVar);
+	const reslist = window.addEventListener("resize",setScrollVar);
 
 // this is horrible; this function is called for each Animation component. fix later
 function setScrollVar(){
 	const HTMLElement = document.documentElement;
-	const scrolltop = HTMLElement.scrollTop / window.scrollMaxY;
+	const scrolltop = HTMLElement.scrollTop / (HTMLElement.scrollHeight - HTMLElement.clientHeight);
 	const HelloElement = document.getElementsByClassName("Hello");
-
-	for(let i = 0; i < HelloElement.length; i ++)
-	{
-		HelloElement[i].style.setProperty("translate", "0px " + 1000*scrolltop + "px");
+	if(HelloElement.length == 0) {
+		window.removeEventListener("scroll",scrlist);
+		window.removeEventListener("resize",reslist);
+		return;
 	}
-	
+
+	HelloElement[0].style.setProperty("translate", "0px " + 1000*scrolltop + "px");
 
 	if(scrolltop >= 1)
 	{

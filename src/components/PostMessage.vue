@@ -12,7 +12,7 @@ const props = defineProps({
 const message = ref(props.message);
 const msgParsed = message.value.split(' ');
 
-// the reply function is inside parent component ./MainBody.vue
+// the functions are inside parent component ./MainBody.vue
 const emit = defineEmits(['reply', 'HoverElemAppear'])
 
 function HoverMsg(arg){
@@ -68,6 +68,7 @@ function HashIfNot(id){
                 <!-- this is terrible, but it works, find better solution later -->
                 <template v-for="msg in msgParsed">
                     <template v-if="msg.substring(0,12) == '[replying_to' && msg.slice(-1) == ']'">
+                        <!--mouseover?? not a good design for mobiles-->
                         <a class="linktomsg" @mouseover="HoverMsg(msg.substring(12,msg.length-1))" @mouseleave="UnHoverMsg" v-bind:href="'#post' + msg.substring(12,msg.length-1)">{{ msg + ' ' }}</a>
                     </template>
                     <template v-else>
@@ -75,6 +76,7 @@ function HashIfNot(id){
                     </template>
                 </template>
             </p>
+            <!--sends function call to reply function in MainBody.vue-->
             <button class="reply_btn"  @click="$emit('reply', id)">reply</button>
         </div>
     </div>

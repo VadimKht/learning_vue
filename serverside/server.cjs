@@ -1,13 +1,20 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
+const { networkInterfaces } = require('os')
 
 const DbInfo = require("./db.config.cjs")
 
 const app = express();
+// temporary solution to finding only MY, creator's ipv4 for cors
+const my_ipv4_addr = networkInterfaces().wlp4s0[0].address;
+
 var corsOptions = {
   // the :4173 port is temporary solution for that one time i wanted my phone to be able to connect 
-  origin: ["http://localhost:5173", "http://192.168.0.104:4173"]
+  origin: ["http://" + my_ipv4_addr + ":5173", 
+  "http://" + my_ipv4_addr + ":4173", 
+  "http://localhost:5173",
+  "http://localhost:4173"]
 };
 app.use(cors(corsOptions));
 

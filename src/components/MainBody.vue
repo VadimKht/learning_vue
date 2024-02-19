@@ -1,7 +1,7 @@
 <script setup>
 	import Animation from "./Animation.vue"
 	import PostMessage from "./PostMessage.vue"
-	import {cookieExists,getCookieValue} from "./../common/customfuncs"
+	import {cookieExists, getCookieValue, decodeUTF8Base64, encodeUTF8base64} from "./../common/customfuncs"
 	import TutorialDataService from "../services/TutorialDataService";
 	import ButtonPages from "./ButtonPages.vue";
 	import { ref } from "vue"
@@ -12,19 +12,22 @@
 	let pages = ref([]);
 	
 	// really just updates messages and pages
-	function onStart(){
+	function updatePages(){
 		return new Promise((resv,rej)=>{
 			amountofPages.value = TutorialDataService.GetPagesAmount()
 			.then((res)=>{
 				if(res.data == 0){
-					pages.value = [];
-					pages.value.push({id: 1, currentPage: true});
+					// if there is no posts, it just leaves a single selected page instead of not rendering one at all.
+					pages.value = [{id: 1, currentPage: true}];
 					resv('resolved');
 					return;
 				}
-				pages.value = [];
+				// !
+				let virtualPages = [];
+
 				for(let i = 1; i < res.data+1; i++){
-					pages.value.push({id: i, currentPage: (i == activePage.value) ? true : false});
+					virtualPages.push({id: i, currentPage: (i == activePage.value) ? true : false});
+					pages.value = virtualPages;
 				}
 				resv('resolved');
 			})
@@ -33,10 +36,10 @@
 			})
 		})
 	}
-	onStart().catch(err=>alert("it seems the server is off or inaccessible. this means the page will not work as intended. follow second instruction on website"));
-	
+
 	function reply(id){
-		document.getElementById("inputForPost").value += "[replying_to" + id + "] "
+		// temporary solution
+		document.getElementById("inputForPost").value += " [replying_to" + id + "] "
 	}
 
 	function hoverElemAppear(post, origid){
@@ -67,11 +70,13 @@
 	
 	function sendPost(){
 		if(!cookieExists("token")) {
-			alert("You are not logged in! please log in. only logged users can post.");
+			alert("You are not logged in! only logged users can post.");
 			return;
 		};
 		const token = getCookieValue("token");
-		TutorialDataService.PostPost({token: token, data: document.getElementById("inputForPost").value})
+		const data = document.getElementById("inputForPost").value;
+		const EncodedData = encodeUTF8base64(new TextEncoder().encode(data));
+		TutorialDataService.PostPost({token: token, data: EncodedData})
 		.then(msg=>{
 			// TODO: for some reason updatePosts doesn't include the post that we just posted. seems that it doesn't actually do it in time.
 			// timeout set, CHANGE LATER!
@@ -86,16 +91,25 @@
 		});
 	}
 
-	// it has annoying issue where updating it causes the scroll of page to reset to up. quite annoying. fix later.
+	// postsVirtual is made because first i planned to refresh Posts.value, but it updates DOM and therefore causes
+	// screen to shift when changing page. so i made postsVirtual that i later assign to Posts.value later
+	//
+	// consider hashing in cookies to prervent needless backend requests on restart/message send?
 	function updatePosts(){
-		Posts.value = [];
+		let postsVirtual = [];
 
 		TutorialDataService.GetPostPage(activePage.value)
 		.then(posts => {
-			posts.data.forEach(element => Posts.value.push({id: element.id ,name: element.creator, message: element.content}))
-			onStart();
+			posts.data.forEach(element => {
+				const message = element.content;
+				const decodedMessage = new TextDecoder().decode(decodeUTF8Base64(message));
+				postsVirtual.push({id: element.id ,name: element.creator, message: decodedMessage})
+			});
+			Posts.value = postsVirtual;
+			updatePages();
 		});
 	}
+	console.log(navigator.userAgent);
 	updatePosts();
 </script>
 <template>
@@ -149,10 +163,7 @@
 	.messagecontrol button:hover{
 		background: whitesmoke;
 	}
-	#messagelist{
-		/* solves annoying issue with screen when you click other page*/
-		height: 1200px;
-	}
+
 	#inputForPost{
 		line-height: 20px;
 	}
