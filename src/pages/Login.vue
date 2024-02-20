@@ -1,5 +1,6 @@
 <script setup>
 import { RouterLink } from 'vue-router'
+import NonHomePage from '../components/NonHomePage.vue';
 import TutorialDataService from "../services/TutorialDataService";
 TutorialDataService.Ping().catch((err)=>{
 	if(err.code == "ERR_NETWORK") {
@@ -55,10 +56,7 @@ export default {
 </script>
 
 <template>
-	<div class="row justify-even _header">
-		<p>Login page</p>
-		<RouterLink to="/">Return back to home</RouterLink>
-	</div>
+	<NonHomePage>Login page</NonHomePage>
 	<!--vue router as a server sucks so i'm doing get. normally this should be post-->
 	<!--update: i found out i just have to have backend server-->
 	<div class="center column _loginverify">

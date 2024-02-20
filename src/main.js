@@ -5,6 +5,7 @@ import App from './App.vue'
 import Home from './pages/Home.vue'
 import Login from './pages/Login.vue'
 import Error from './pages/404.vue'
+import About from './pages/About.vue'
 
 const router = createRouter({
 //vue routing
@@ -22,6 +23,11 @@ const router = createRouter({
 			path: '/login',
 			name: 'login',
 			component: Login
+		},
+		{
+			path: '/about',
+			name: 'about',
+			component: About
 		},
 		{
 			path: '/:any',

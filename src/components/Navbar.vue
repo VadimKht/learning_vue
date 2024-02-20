@@ -10,6 +10,10 @@ p,h1,h2,h3,h4,h5,h6,a{
 	margin-top: auto;
 	margin-bottom: auto;
 }
+.links{
+	margin-right: 12px;
+}
+
 </style>
 
 <template>
@@ -20,7 +24,8 @@ p,h1,h2,h3,h4,h5,h6,a{
 			</h1>
 		</div>
 		<div class="anchor-right">
-			<RouterLink to="/login">login</RouterLink>
+			<RouterLink class="links" to="/login">login</RouterLink>
+			<RouterLink class="links" to="/about">about</RouterLink>
 		</div>
 	</div>
 </template>
