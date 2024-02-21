@@ -1,6 +1,6 @@
 <script setup>
 	import PostMessage from "./PostMessage.vue"
-	import {cookieExists, getCookieValue, decodeUTF8Base64, encodeUTF8base64} from "./../common/customfuncs"
+	import {cookieExists, getCookieValue} from "./../common/customfuncs"
 	import TutorialDataService from "../services/TutorialDataService";
 	import ButtonPages from "./ButtonPages.vue";
 	import { ref } from "vue"
@@ -64,7 +64,6 @@
 		pages.value[ownNumber-1].currentPage = true;
 		activePage.value = ownNumber;
 		updatePosts();
-		// find out how to rerender vue component just like react does it
 	}
 	
 	function sendPost(){
@@ -74,8 +73,7 @@
 		};
 		const token = getCookieValue("token");
 		const data = document.getElementById("inputForPost").value;
-		const EncodedData = encodeUTF8base64(new TextEncoder().encode(data));
-		TutorialDataService.PostPost({token: token, data: EncodedData})
+		TutorialDataService.PostPost({token: token, data: data})
 		.then(msg=>{
 			// TODO: for some reason updatePosts doesn't include the post that we just posted. seems that it doesn't actually do it in time.
 			// timeout set, CHANGE LATER!
@@ -104,8 +102,7 @@
 		.then(posts => {
 			posts.data.forEach(element => {
 				const message = element.content;
-				const decodedMessage = new TextDecoder().decode(decodeUTF8Base64(message));
-				postsVirtual.push({id: element.id ,name: element.creator, message: decodedMessage})
+				postsVirtual.push({id: element.id ,name: element.creator, message: message})
 			});
 			Posts.value = postsVirtual;
 			updatePages();
@@ -128,7 +125,6 @@
 		<input type="text" name="text" id="inputForPost">
 		<button class="sndbtn" @click="sendPost">send post! (requires registration)</button>
 		<div id="pageButtons" class="pageButtons">
-			<!--TODO: figure out how to make-->
 			<ButtonPages v-for="page in pages" :id="page.id" :currentPage="page.currentPage" @click="changePage(page.id)"/>
 		</div>
 		<div id="messagelist">
@@ -170,13 +166,16 @@
 	}
 
 	/* for some reason overflow does not send on new line */
+	/* if the text is too big and reply is at the bottom, the reply expands the page, but scrolling down there is hard. find a way to make the text instead go up */
 	#HoverElem{
 		width: 300px;
-		overflow:visible;
-		white-space: initial;
+
 		position:absolute;
-		
-		background-color: red;
+		border-radius: 12px;
+		border: 8px #804040 solid;
+		padding: 0 12px;
+
+		background-color: #404040;
 		display:none;
 	}
 </style>

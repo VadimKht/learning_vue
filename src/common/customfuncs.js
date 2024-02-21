@@ -41,14 +41,3 @@ export function setCookie(key, value, expiration_s){
 	let string = key + "=" + value + ";expires=" + getUTCTimeDur(expiration_s).toUTCString() + ";SameSite=strict";
 	document.cookie = string;
 }
-
-// https://developer.mozilla.org/en-US/docs/Glossary/Base64
-export function encodeUTF8base64(data){
-	const binString = String.fromCodePoint(...data);
-	return btoa(binString);
-}
-
-export function decodeUTF8Base64 (base64) {
-	const binString = atob(base64);
-	return Uint8Array.from(binString, (m) => m.codePointAt(0));
-}
