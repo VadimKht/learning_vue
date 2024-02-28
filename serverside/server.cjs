@@ -1,9 +1,10 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
-const { networkInterfaces } = require('os')
+const { networkInterfaces } = require('os');
+var path = require ('path');
 
-const DbInfo = require("./db.config.cjs")
+const DbInfo = require("./db.config.cjs");
 
 const app = express();
 // temporary solution to finding only MY, creator's ipv4 for cors
@@ -14,7 +15,8 @@ var corsOptions = {
   origin: ["http://" + my_ipv4_addr + ":5173", 
   "http://" + my_ipv4_addr + ":4173", 
   "http://localhost:5173",
-  "http://localhost:4173"]
+  "http://localhost:4173",
+  "http://localhost:8080"]
 };
 app.use(cors(corsOptions));
 
@@ -26,8 +28,19 @@ app.use(bodyParser.urlencoded({ extended: true }));
 const db = require("./models/index.cjs");
 
 require("./routes/tutorial.routes.cjs")(app);
+
 // set port, listen for requests
 const PORT = process.env.PORT || 8080;
+
+var router = require("express").Router();
+app.use(express.static(path.join(__dirname, 'views')),);
+app.set('view engine', 'ejs');
+
+router.get("/", (req,res)=>{
+  res.render('index');
+});
+app.use(router);
+
 
 // remove force or change to false to stop dropping all tables
 db.sequelize.sync({ force: true }).then(() => {
@@ -47,3 +60,4 @@ db.sequelize.sync({ force: true }).then(() => {
   console.log("Unexpected error! \n" + err);
   return;
 });
+

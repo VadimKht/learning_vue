@@ -19,6 +19,13 @@ class TutorialDataService {
   GetPagesAmount(){
     return http.get("/GetMsgPages");
   }
+  EditPost(data){
+    return http.patch("/EditPost", data);
+  }
+  RemovePost(data){
+    // in remove http request there is {headers: {"Authorization": ""}, data: {}}. might have to learn a bit more about it and later make authorization more correct
+    return http.delete("/DeletePost", {data: data});
+  }
   Ping(){
     return http.get("/ping");
   }

@@ -17,7 +17,7 @@ import {setCookie} from "../common/customfuncs"
 
 // later use special encryption here
 function Encrypt(password){
-	return password
+	return password;
 }
 
 export default {
@@ -29,7 +29,10 @@ export default {
 				password: encrypted_pass
 			};
 			TutorialDataService.Login(data)
-			.then(res => setCookie("token", res.data.token, 3600))
+			.then(res => {
+				setCookie("token", res.data.token, 3600);
+				setCookie("username", document.getElementById("username").value, 3600);
+			})
 			.catch(err=>console.log("error! its " + err));
 		},
 		Registerf(){
@@ -41,6 +44,7 @@ export default {
 			TutorialDataService.Register(data)
 			.then(res=>{
 				setCookie("token", res.data.token, 3600);
+				setCookie("username", document.getElementById("username").value ,3600)
 				alert("successful register!");
 			})
 			.catch(err=>{
@@ -57,8 +61,6 @@ export default {
 
 <template>
 	<NonHomePage>Login page</NonHomePage>
-	<!--vue router as a server sucks so i'm doing get. normally this should be post-->
-	<!--update: i found out i just have to have backend server-->
 	<div class="center column _loginverify">
 		<br>
 		<label for="username">username</label><br>

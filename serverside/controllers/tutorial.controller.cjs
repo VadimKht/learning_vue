@@ -103,7 +103,7 @@ exports.create = (req, res) => {
 exports.testCredentials = (req,res) =>{
   const usern = req.body.username;
   const passw = req.body.password;
-  const usr = Usertype.findOne({ where: { username: usern } }).then( user => {
+  Usertype.findOne({ where: { username: usern } }).then( user => {
     if(user == null)
     {
       res.status(400).send({message: "no such user!"});
@@ -210,5 +210,32 @@ exports.GetPostN = (req,res) =>{
   }).catch(err=>{
     res.status(500).send({message: "serverside error", error: err})
   });
+}
 
+exports.EditPost = (req,res) => {
+
+}
+exports.DeletePost = (req,res) =>{
+  const PostId = req.body.postId;
+  const Token = req.body.token;
+  console.log("request! " + Object.keys(req.body));
+  Usertype.findOne({where: {token: Token}}).then(usertoken=>{
+    if(usertoken == null)
+    {
+      res.status(401).send({message:"no such token registered"});
+      return;
+    }
+    Posttype.findByPk(PostId).then(post=>{
+      if(usertoken.username == post.creator){
+        post.destroy();
+        res.status(200).send({message: "success at deleting post"});
+        return;
+      }
+      res.status(400).send({message: "usertoken username is not post creator"})
+    })
+
+    .catch(err=>res.status(401).send({message: "error! " + err}));
+
+  })
+  .catch(err=>res.status(401).send({message: "error! " + err}));
 }

@@ -128,7 +128,7 @@
 			<ButtonPages v-for="page in pages" :id="page.id" :currentPage="page.currentPage" @click="changePage(page.id)"/>
 		</div>
 		<div id="messagelist">
-			<PostMessage v-for="post in Posts" :id="post.id" :username="post.name" :message="post.message" :key="post.id" @reply="reply" @HoverElemAppear="hoverElemAppear"/>
+			<PostMessage v-for="post in Posts" :id="post.id" :username="post.name" :message="post.message" :key="post.id" @reply="reply" @HoverElemAppear="hoverElemAppear" @updatePosts="updatePosts"/>
 		</div>
 	</div>
 </template>

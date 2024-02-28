@@ -1,9 +1,10 @@
 <script setup>
 import { ref } from 'vue';
 import TutorialDataService from '../services/TutorialDataService'
+import { getCookieValue } from '../common/customfuncs';
 
 const props = defineProps({
-    id:Number,
+    id: Number,
     username: String,
     message: String
 });
@@ -13,7 +14,7 @@ const message = ref(props.message);
 const msgParsed = message.value.split(' ');
 
 // the functions are inside parent component ./MainBody.vue
-const emit = defineEmits(['reply', 'HoverElemAppear'])
+const emit = defineEmits(['reply', 'HoverElemAppear', 'updatePosts'])
 
 function HoverMsg(arg){
     HashIfNot(arg)
@@ -55,7 +56,24 @@ function HashIfNot(id){
     })
 }
 
-// TODO: change page if a href click is not in current page. change behavior for getElementsbyClassName("linktomsg") somehow
+// introduces bug: if you make 10 comments and delete them, you will have empty page.
+// further adding comments adds them to next page, but you won't see them because my code
+// thinks that if there is less than 10 posts, then there is only first page.
+// backend also does a mistake of sending pages by its id.
+// i must add comment id and generally id in database.
+function RemovePost(id){
+    const token = getCookieValue("token");
+    TutorialDataService.RemovePost({postId: id, token: token}).then(res=>{
+        emit('updatePosts');
+    });
+}
+function EditPost(){
+    // change the comment into input and add "change" and "cancel" buttons.
+    // "change" will send request to edit.
+    // sounds like a lot of work, so i will do it later 
+    const token = getCookieValue("token");
+}
+
 </script>
 <template>
     <div class="post" :id="'post'+id">
@@ -77,7 +95,9 @@ function HashIfNot(id){
                 </template>
             </p>
             <!--sends function call to reply function in MainBody.vue-->
-            <button class="reply_btn"  @click="$emit('reply', id)">reply</button>
+            <button class="action_btn" @click="RemovePost(id)">remove</button>
+            <button class="action_btn" @click="EditPost()">edit</button>
+            <button class="action_btn" @click="$emit('reply', id)">reply</button>
         </div>
     </div>
 </template>
@@ -93,7 +113,7 @@ function HashIfNot(id){
 .idtext{
     font-size: 0.7em;
 }
-.reply_btn{
+.action_btn{
     height: 20px;
     align-self: flex-end;
 }

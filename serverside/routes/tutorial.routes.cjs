@@ -13,6 +13,8 @@ module.exports = app => {
     router.get("/GetMsgPages", tutorials.getMsgPages);
     router.get("/GetMsgN:id", tutorials.GetPostN);
     router.get("/ping",tutorials.ping);
+    router.patch("/EditPost", tutorials.EditPost);
+    router.delete("/DeletePost", tutorials.DeletePost);
 
     // Retrieve all Tutorials
     router.get("/", tutorials.findAll);
