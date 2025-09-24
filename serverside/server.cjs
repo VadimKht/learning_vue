@@ -7,16 +7,15 @@ var path = require ('path');
 const DbInfo = require("./db.config.cjs");
 
 const app = express();
-// temporary solution to finding only MY, creator's ipv4 for cors
-const my_ipv4_addr = networkInterfaces().wlp4s0[0].address;
 
 var corsOptions = {
   // the :4173 port is temporary solution for that one time i wanted my phone to be able to connect 
-  origin: ["http://" + my_ipv4_addr + ":5173", 
-  "http://" + my_ipv4_addr + ":4173", 
+  origin: [
   "http://localhost:5173",
   "http://localhost:4173",
-  "http://localhost:8080"]
+  "http://localhost:8080",
+  "http://127.0.0.1:8080",
+  "http://127.0.0.1:5173"]
 };
 app.use(cors(corsOptions));
 
@@ -30,7 +29,8 @@ const db = require("./models/index.cjs");
 require("./routes/tutorial.routes.cjs")(app);
 
 // set port, listen for requests
-const PORT = process.env.PORT || 8080;
+// if you change it, also go ahead and change it in frontend src/http-common.js 
+const PORT = 8080;
 
 var router = require("express").Router();
 app.use(express.static(path.join(__dirname, 'views')),);
