@@ -14,6 +14,6 @@ export default defineConfig({
     }
   },
   build: {
-    outDir: './serverside/views'
+    outDir: './build'
   }
 })

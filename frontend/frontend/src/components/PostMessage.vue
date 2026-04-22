@@ -61,6 +61,9 @@ function HashIfNot(id){
 // thinks that if there is less than 10 posts, then there is only first page.
 // backend also does a mistake of sending pages by its id.
 // i must add comment id and generally id in database.
+// NEW COMMENT: i think mysql allows fetching properly and it may have already been set, although the removing post still has bug - it doesn't update so it looks like it wasn't removed...
+// I tried fixing it with .then() where i'd update DOM after getting a response, but it seems backend-database-backend delay is causing the bug
+// normally in a real code i'd just have server sent events and a server would send an event when a database sucessfully got updated
 function RemovePost(id){
     const token = getCookieValue("token");
     TutorialDataService.RemovePost({postId: id, token: token}).then(res=>{
@@ -71,6 +74,7 @@ function EditPost(){
     // change the comment into input and add "change" and "cancel" buttons.
     // "change" will send request to edit.
     // sounds like a lot of work, so i will do it later 
+    // new comment: the project has been abandoned and it won't be done anymore
     const token = getCookieValue("token");
 }
 
@@ -96,7 +100,6 @@ function EditPost(){
             </p>
             <!--sends function call to reply function in MainBody.vue-->
             <button class="action_btn" @click="RemovePost(id)">remove</button>
-            <button class="action_btn" @click="EditPost()">edit</button>
             <button class="action_btn" @click="$emit('reply', id)">reply</button>
         </div>
     </div>

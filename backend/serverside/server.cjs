@@ -9,13 +9,9 @@ const DbInfo = require("./db.config.cjs");
 const app = express();
 
 var corsOptions = {
-  // the :4173 port is temporary solution for that one time i wanted my phone to be able to connect 
   origin: [
   "http://localhost:5173",
-  "http://localhost:4173",
-  "http://localhost:8080",
-  "http://127.0.0.1:8080",
-  "http://127.0.0.1:5173"]
+  "http://127.0.0.1:5173",]
 };
 app.use(cors(corsOptions));
 
@@ -50,11 +46,12 @@ db.sequelize.sync({ force: true }).then(() => {
   });
 }).catch(err => {
   if(err.name == "SequelizeConnectionRefusedError"){ 
-    console.log("Please turn on your local database server first!");
+    console.log("Please turn on your local database server first!\NWarning: the database may still be starting up, so wait for this warning to appear around 3 more times");
     return;
   } 
   if(err.name == "SequelizeConnectionError"){
     console.log("It seems you don't have a database called " + DbInfo.DB + ". Please either create one by manually adding it, or if you prefer to connect to existing one, change db.config.cjs DB field. \nP.S. the chosen database will have all tables dropped for debugging purposes.\nP.S.S. later i might find a way to make database automatically")
+    console.log(err);
     return;
   }
   console.log("Unexpected error! \n" + err);

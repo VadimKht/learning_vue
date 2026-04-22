@@ -84,7 +84,7 @@
 		})
 		.catch(err=>{
 			console.log(err);
-			alert("some error has happened. maybe you posses token for non existent user? or forgot to turn on the backend server? (console for more info)");
+			alert("unknown error. could be token for non existent user in browser cookies? or the backend server is off. (console for more info)");
 		});
 	}
 
@@ -172,10 +172,10 @@
 
 		position:absolute;
 		border-radius: 12px;
-		border: 8px #804040 solid;
+		border: 8px #231f20 solid;
 		padding: 0 12px;
 
-		background-color: #404040;
+		background-color: white;
 		display:none;
 	}
 </style>

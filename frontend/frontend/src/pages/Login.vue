@@ -4,7 +4,7 @@ import NonHomePage from '../components/NonHomePage.vue';
 import TutorialDataService from "../services/TutorialDataService";
 TutorialDataService.Ping().catch((err)=>{
 	if(err.code == "ERR_NETWORK") {
-		alert("your backend is not turned on on properly. you cannot register or login.");
+		alert("your backend is not not on. you cannot register or login.");
 		return;
 	};
 	alert("seems there is an error. maybe CORS issue, check /serverside/server.cjs for CORS settings");
@@ -15,7 +15,7 @@ TutorialDataService.Ping().catch((err)=>{
 import TutorialDataService from "../services/TutorialDataService";
 import {setCookie} from "../common/customfuncs"
 
-// later use special encryption here
+// encryption should be here. as this project is concept of proof-learning material for frontend-backend-database interactions, if it was a prod, this part of code would actually be very bad
 function Encrypt(password){
 	return password;
 }
